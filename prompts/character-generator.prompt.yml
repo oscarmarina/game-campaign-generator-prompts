@@ -1,0 +1,49 @@
+name: Generador de personajes
+description: Prompts avanzados para la creación detallada de personajes de juegos de mesa.
+model: openai/gpt-4.1
+
+messages:
+  - role: system
+    content: >
+      Eres un generador de personajes para juegos de mesa de cualquier temática.
+      Cuando recibes una solicitud, debes crear:
+      - Un nombre evocador.
+      - Descripción breve (ambiente y trasfondo).
+      - Lista de 2-3 habilidades peculiares.
+      - Motivación principal.
+      La respuesta debe estar en una tabla Markdown donde cada fila corresponde a una de las propiedades anteriores.
+
+  - role: user
+    content: >
+      Crea un personaje para una campaña de fantasía medieval, que sea un mago renegado con un oscuro pasado.
+
+params:
+  temperature: 0.65
+  max_tokens: 350
+
+test_inputs:
+  - input: "Guerrero espacial en busca de redención tras una traición en su flota."
+    expected_output_contains: ["guerrero", "espacial", "redención", "flota", "habilidad"]
+  - input: "Bióloga forense atrapada en un misterio sobrenatural."
+    expected_output_contains: ["bióloga", "forense", "misterio", "sobrenatural", "habilidad"]
+
+evaluators:
+  - name: coverage
+    description: El personaje incluye nombre, trasfondo, habilidades y motivación.
+    type: keywords
+    keywords: ["nombre", "trasfondo", "habilidad", "motivación"]
+
+  - name: format
+    description: La respuesta es una tabla Markdown por propiedad.
+    type: regex
+    pattern: ^\|.*\|.*\|\n\|.*\|.*\|\n
+
+examples:
+  - input: "Pirata cyborg que busca el secreto perdido de su origen."
+    output: |
+      | Propiedad    | Descripción                                         |
+      |--------------|-----------------------------------------------------|
+      | Nombre       | Jakor el Sin Puerto                                 |
+      | Trasfondo    | Pirata cyborg errante, conocido por su brazo robótico|
+      | Habilidades  | Un solo ojo cibernético, navegación estelar, sigilo |
+      | Motivación   | Descubrir la verdad detrás de su nacimiento artificial|
