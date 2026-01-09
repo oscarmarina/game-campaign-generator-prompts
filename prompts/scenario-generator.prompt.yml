@@ -1,0 +1,48 @@
+name: Generador de escenarios
+description: Prompts para crear escenarios ambientados y situaciones para campañas de juegos de mesa.
+model: openai/gpt-4.1
+
+messages:
+  - role: system
+    content: >
+      Eres un generador de escenarios para campañas de juegos de mesa. Dados los parámetros del usuario, debes crear:
+      - Ambientación clara y visual.
+      - Un reto/desafío principal.
+      - Elementos interactivos o reglas especiales únicas.
+      - Una pista o giro inesperado que acelere la historia.
+      Responde en tabla Markdown, una fila por cada elemento.
+
+  - role: user
+    content: >
+      Proporciona un escenario para una campaña de misterio en un castillo antiguo ocupado en invierno.
+
+params:
+  temperature: 0.7
+  max_tokens: 400
+
+test_inputs:
+  - input: "Escenario futurista en una estación espacial abandonada."
+    expected_output_contains: ["futurista", "estación espacial", "desafío", "regla", "pista"]
+  - input: "Bosque encantado donde los jugadores deben buscar un portal oculto."
+    expected_output_contains: ["bosque", "encantado", "portal", "interactivo", "giro"]
+
+evaluators:
+  - name: coverage
+    description: El escenario debe incluir ambientación, reto, regla y pista.
+    type: keywords
+    keywords: ["ambientación", "reto", "regla", "pista"]
+
+  - name: format
+    description: La respuesta debe ser una tabla Markdown con 4 elementos.
+    type: regex
+    pattern: ^\|.*\|.*\|\n\|.*\|.*\|\n
+
+examples:
+  - input: "Templo sumergido con enemigos antiguos y tecnología olvidada."
+    output: |
+      | Elemento      | Descripción                                             |
+      |---------------|---------------------------------------------------------|
+      | Ambientación  | Templo sumergido decorado con relieves y antiguas runas |
+      | Reto          | Resolver el enigma de las puertas sumergidas            |
+      | Regla especial| Pérdida de oxígeno cada 3 turnos                        |
+      | Pista/Giro    | Un artefacto revela secretos de los antiguos habitantes |
