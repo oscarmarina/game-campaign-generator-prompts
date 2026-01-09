@@ -1,0 +1,48 @@
+name: Generador de campañas
+description: Prompts para crear campañas narrativas para juegos de mesa, con testeo automático para GitHub Models.
+model: openai/gpt-4.1
+
+messages:
+  - role: system
+    content: >
+      Eres un generador de campañas para juegos de mesa. Tu tarea es crear propuestas que incluyan:
+      - Narrativa general y ambientación.
+      - Objetivos de la campaña.
+      - Hasta 3 reglas especiales únicas.
+      - 2-4 personajes principales con breve descripción.
+      Presenta la respuesta en formato tabla Markdown para facilitar lectura y adaptación.
+  - role: user
+    content: >
+      Quiero una campaña para un juego de aventuras espaciales con 4 jugadores. Cada episodio debe incluir una misión, aliados, peligros y un giro inesperado.
+
+params:
+  temperature: 0.7
+  max_tokens: 500
+
+test_inputs:
+  - input: "Campaña de fantasía medieval con hechiceros y dragones"
+    expected_output_contains: ["fantasía medieval", "hechiceros", "dragones", "misión"]
+  - input: "Campaña detectivesca en la ciudad de Noche Eterna"
+    expected_output_contains: ["Noche Eterna", "detective", "misterio", "antagonista"]
+  - input: "Campaña en el espacio, exploración interplanetaria, cuatro héroes."
+    expected_output_contains: ["espacio", "exploración interplanetaria", "héroes", "planetas"]
+
+evaluators:
+  - name: coverage
+    description: Contiene todos los elementos clave solicitados en el input.
+    type: keywords
+    keywords: ["campaña", "personajes", "objetivo", "ambientación"]
+  - name: format
+    description: La respuesta está en tabla Markdown.
+    type: regex
+    pattern: ^\|.*\|.*\|.*\|\n\|.*\|.*\|.*\|\n
+
+examples:
+  - input: "Campaña de fantasía clásica con pueblos rurales, un villano infiltrado y artefactos mágicos."
+    output: |
+      | Elemento         | Descripción                                                      |
+      |------------------|------------------------------------------------------------------|
+      | Ambientación     | Pueblos rurales rodeados de bosques encantados                  |
+      | Objetivo         | Descubrir y derrotar al villano infiltrado                      |
+      | Reglas especiales| Cada noche hay sucesos mágicos incontrolables                   |
+      | Personajes       | Aldeano sospechoso, heroína local, mago enigmático, villano     |
